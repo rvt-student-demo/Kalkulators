@@ -7,7 +7,7 @@ public class Uzdevums1 {
     public static void uzd3() {
         Scanner scanner = new Scanner(System.in);
         int skaitlis = scanner.nextInt();
-        while (skaitlis < 100 & skaitlis > 1) {
+        while (skaitlis <= 100 & skaitlis >= 1) {
             if (skaitlis % 3 == 0 & skaitlis % 5 == 0) {
                 System.out.println("FizzBuzz");
                 return;
