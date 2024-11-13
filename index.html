@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <div class="calc-text">
-            <p name="user-input" id="user-input">0</p>
+            <p id="user-input">0</p>
         </div>
         <div class="calc-keys">
             <button type="button" class="key-others operations">AC</button>
@@ -33,12 +33,16 @@
             <button type="button" class="key-operate operations">=</button>
         </div>
     </div>
+    
+    <!-- History Section -->
     <div class="rightSide">
         <h4>HISTORY</h4>
         <div class="historyContainer">
-          
+            <!-- History items will be dynamically injected here -->
         </div>
-      </div>
+        <button id="clear-history" class="clear-history">Clear History</button>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>

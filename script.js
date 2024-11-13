@@ -1,85 +1,109 @@
-// Iegūstam elementu, kas attēlo ievadi (tā vērtību)
 const inputValue = document.getElementById("user-input");
-
-// Iegūstam elementu, kurā tiks attēlota vēsture
 const historyContainer = document.querySelector('.historyContainer');
-
-// Nosaukums, kādā tiks saglabāta vēsture vietējā krātuvē (localStorage)
 const STORAGE_NAME = 'history_v4';
 
-// Ja vēsture vietējā krātuvē ir tukša, inicializējam to ar tukšu masīvu
+// Initialize localStorage if it's empty
 if (localStorage.getItem(STORAGE_NAME) == null) {
     localStorage.setItem(STORAGE_NAME, JSON.stringify([]));
 }
 
-// Funkcija, kas atjauno vēstures skatu
+// Function to refresh the history display
 function refreshHistory() {
-    // Iegūstam saglabāto vēsturi no localStorage
-    const history = JSON.parse(localStorage.getItem(STORAGE_NAME));
+    const history = JSON.parse(localStorage.getItem(STORAGE_NAME)); // Get the history from localStorage
+    historyContainer.innerHTML = ''; // Clear the current history display
 
-    // Iztīrām esošo vēstures skatu
-    historyContainer.innerHTML = '';
-
-    // Iterējam cauri visiem vēstures ierakstiem
-    history.forEach(item => {
+    // Iterate over each history entry
+    history.forEach((item, index) => {
         const historyItem = document.createElement('div');
         historyItem.classList.add('history-item');
-        // Pievienojam vēstures ierakstu
-        historyItem.innerHTML = `<span>${item.expression} = </span><span>${item.result}</span>`;
+        
+        // Add the expression and result to the history item
+        historyItem.innerHTML = `
+            <span>${item.expression} = </span><span>${item.result}</span>
+            <button class="delete-history" data-index="${index}">Delete</button>
+        `;
+        
+        // Append the history item to the history container
         historyContainer.appendChild(historyItem);
+    });
+
+    // Add event listeners for delete buttons
+    document.querySelectorAll('.delete-history').forEach(button => {
+        button.addEventListener('click', function() {
+            const index = button.getAttribute('data-index'); // Get the index of the history item to delete
+            deleteHistoryItem(index); // Call the function to delete the item
+        });
     });
 }
 
-// Piešķiram klikšķa notikumu visiem ciparu taustiņiem
+// Function to delete a history item from localStorage
+function deleteHistoryItem(index) {
+    const history = JSON.parse(localStorage.getItem(STORAGE_NAME)); // Get current history from localStorage
+    
+    // Remove the history item at the given index
+    history.splice(index, 1);
+    
+    // Save the updated history back to localStorage
+    localStorage.setItem(STORAGE_NAME, JSON.stringify(history));
+    
+    // Refresh the history UI
+    refreshHistory();
+}
+
+// Function to clear all history from localStorage
+function clearAllHistory() {
+    // Set the history in localStorage to an empty array
+    localStorage.setItem(STORAGE_NAME, JSON.stringify([]));
+    
+    // Refresh the history UI to reflect the cleared history
+    refreshHistory();
+}
+
+// Add event listeners for number buttons
 document.querySelectorAll(".numbers").forEach(function (item) {
     item.addEventListener("click", function (e) {
-        // Ja ekrānā ir NaN vai 0, tad iztīram ievadi
         if (inputValue.innerText === "NaN" || inputValue.innerText === "0") {
             inputValue.innerText = "";
         }
-        // Pievienojam uzklikšķināto ciparu ievadei
         inputValue.innerText += e.target.innerHTML.trim();
     });
 });
 
-// Piešķiram klikšķa notikumu visiem darbības (operatoru) taustiņiem
+// Add event listeners for operation buttons
 document.querySelectorAll(".operations").forEach(function (item) {
     item.addEventListener("click", function (e) {
-        const operation = e.target.innerHTML; // Iegūstam uzklikšķināto operatoru
+        const operation = e.target.innerHTML;
         
-        // Ja operatora taustiņš ir "=", veicam aprēķinu
         if (operation === "=") {
             try {
-                const expression = inputValue.innerText; // Iegūstam matemātisko izteiksmi
-                // Izpildām izteiksmi un iegūstam rezultātu
+                const expression = inputValue.innerText;
                 const result = new Function('return ' + expression)();
-                inputValue.innerText = result; // Attēlojam rezultātu ekrānā
+                inputValue.innerText = result;
 
-                // Saglabājam izteiksmi un rezultātu vēsturē
+                // Save the expression and result to localStorage
                 const history = JSON.parse(localStorage.getItem(STORAGE_NAME));
                 history.push({ expression, result });
                 localStorage.setItem(STORAGE_NAME, JSON.stringify(history));
 
-                // Atjaunojam vēstures skatu
+                // Refresh the history display
                 refreshHistory();
             } catch (error) {
-                inputValue.innerText = "NaN"; // Ja ir kļūda, rādām NaN
+                inputValue.innerText = "NaN"; // Handle invalid expression
             }
-        } 
-        // Ja uzklikšķinām "AC" (All Clear), notīrām ievadi
-        else if (operation === "AC") {
+        } else if (operation === "AC") {
             inputValue.innerText = "0";
-        } 
-        // Ja uzklikšķinām "DEL" (Delete), dzēšam pēdējo simbolu
-        else if (operation === "DEL") {
+        } else if (operation === "DEL") {
             inputValue.innerText = inputValue.innerText.slice(0, -1) || "0";
-        } 
-        // Ja uzklikšķinām operatoru, pievienojam to izteiksmei
-        else {
+        } else {
             inputValue.innerText += operation;
         }
     });
 });
 
-// Inicializējam vēsturi, kad lapa tiek ielādēta
+// Add event listener for the Clear History button
+document.getElementById('clear-history').addEventListener('click', function() {
+    clearAllHistory();
+});
+
+// Initial call to display the history when the page loads
 refreshHistory();

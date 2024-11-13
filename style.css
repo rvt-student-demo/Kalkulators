@@ -125,3 +125,19 @@ button:focus {
     font-weight: 600;
     text-align: center;
 }
+
+/* Style the delete button */
+.delete-history {
+    background-color: red; /* Red background for the delete button */
+    color: white;
+    border: none;
+    font-size: 1rem;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px; /* Spacing between result and delete button */
+}
+
+.delete-history:hover {
+    background-color: darkred; /* Darker red when hovered */
+}
